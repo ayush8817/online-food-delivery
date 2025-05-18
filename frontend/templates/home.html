@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Foodie | Home</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #ff6f61;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+        }
+
+        .navbar .left,
+        .navbar .right {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .left h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .navbar .right a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .search-bar {
+            margin: 30px auto;
+            text-align: center;
+        }
+
+        .search-bar input {
+            width: 60%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .categories {
+            margin: 30px auto;
+            text-align: center;
+        }
+
+        .categories button {
+            margin: 5px;
+            padding: 10px 18px;
+            font-size: 15px;
+            border: none;
+            border-radius: 6px;
+            background-color: #ff6f61;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .categories button:hover {
+            background-color: #e2574f;
+        }
+
+        .button-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #ff6f61;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .button-link:hover {
+            background-color: #e2574f;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #333;
+            color: #ccc;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <div class="left">
+            <h1>Foodie</h1>
+        </div>
+        <div class="right">
+            <a href="{% url 'menu' %}">Menu</a>
+            <a href="#">Cart 0</a>
+            <a href="#">Profile</a>
+            <a href="#">Logout</a>
+        </div>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" placeholder="Search for food...">
+    </div>
+
+    <div class="categories">
+        <button>All</button>
+        <button>Pizza</button>
+        <button>Burger</button>
+        <button>Appetizers / Starters</button>
+        <button>Main Course</button>
+        <button>Sandwiches</button>
+        <button>Biryani / Rice Dishes</button>
+        <button>Salads</button>
+        <button>Drinks / Beverages</button>
+        <button>Desserts</button>
+    </div>
+
+    <div style="text-align: center;">
+        <a href="{% url 'menu' %}" class="button-link">View Full Menu</a>
+    </div>
+
+    <footer>
+        © 2024 Foodie. All rights reserved.
+    </footer>
+
+</body>
+</html>

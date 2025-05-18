@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FOODIE - Food Delivery{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .floating-buttons {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .floating-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        .floating-button:hover {
+            transform: scale(1.1);
+        }
+        .customer-care {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .chat-bot {
+            background-color: #2196F3;
+            color: white;
+        }
+        .cart-total {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container text-center">
+            <h1 class="logo">FOODIE</h1>
+        </div>
+    </header>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'menu' %}">Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'cart' %}">Cart</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <span class="nav-link">Welcome, {{ user.username }}</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% if cart_total %}
+    <div class="cart-total">
+        <i class="fas fa-shopping-cart"></i> Total: ${{ cart_total }}
+    </div>
+    {% endif %}
+
+    <div class="container mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <div class="floating-buttons">
+        <button class="floating-button customer-care" data-bs-toggle="modal" data-bs-target="#customerCareModal">
+            <i class="fas fa-headset"></i>
+        </button>
+        <button class="floating-button chat-bot" data-bs-toggle="modal" data-bs-target="#chatBotModal">
+            <i class="fas fa-robot"></i>
+        </button>
+    </div>
+
+    <!-- Customer Care Modal -->
+    <div class="modal fade" id="customerCareModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Customer Care</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><i class="fas fa-phone"></i> Call us: +1 234 567 890</p>
+                    <p><i class="fas fa-envelope"></i> Email: support@foodie.com</p>
+                    <p><i class="fas fa-clock"></i> Available 24/7</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Bot Modal -->
+    <div class="modal fade" id="chatBotModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Foodie Assistant</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="chat-messages" style="height: 300px; overflow-y: auto; margin-bottom: 10px;">
+                        <div class="bot-message">
+                            <p>Hello! I'm your Foodie assistant. How can I help you today?</p>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Type your message...">
+                        <button class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Simple chat bot functionality
+        document.querySelector('.chat-bot').addEventListener('click', function() {
+            const chatMessages = document.querySelector('.chat-messages');
+            const input = document.querySelector('.input-group input');
+            const sendButton = document.querySelector('.input-group button');
+
+            sendButton.addEventListener('click', function() {
+                const message = input.value.trim();
+                if (message) {
+                    // Add user message
+                    chatMessages.innerHTML += `
+                        <div class="user-message text-end">
+                            <p>${message}</p>
+                        </div>
+                    `;
+                    
+                    // Bot response
+                    setTimeout(() => {
+                        chatMessages.innerHTML += `
+                            <div class="bot-message">
+                                <p>I'm a simple bot. For real assistance, please contact our customer care.</p>
+                            </div>
+                        `;
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }, 500);
+
+                    input.value = '';
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

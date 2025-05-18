@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Menu - FOODIE{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Our Menu</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="sticky-top" style="top: 100px;">
+            <div class="list-group">
+                <a href="{% url 'menu' %}" class="list-group-item list-group-item-action {% if not request.GET.category %}active{% endif %}">
+                    <i class="fas fa-utensils me-2"></i> All Categories
+                </a>
+                {% for category in categories %}
+                <a href="{% url 'menu' %}?category={{ category.id }}" 
+                   class="list-group-item list-group-item-action {% if request.GET.category == category.id|stringformat:'i' %}active{% endif %}">
+                    <i class="fas fa-{{ category.icon|default:'pizza-slice' }} me-2"></i> {{ category.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-9">
+        <div class="row">
+            {% for item in menu_items %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="row g-0">
+                        <div class="col-md-5">
+                            <img src="{{ item.image.url }}" class="img-fluid rounded-start h-100" alt="{{ item.name }}" style="object-fit: cover;">
+                        </div>
+                        <div class="col-md-7">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ item.name }}</h5>
+                                <p class="card-text text-muted">{{ item.description }}</p>
+                                <p class="card-text"><strong class="text-danger">${{ item.price }}</strong></p>
+                                <form method="post" action="{% url 'cart' %}" class="mt-2">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="item_id" value="{{ item.id }}">
+                                    <div class="input-group">
+                                        <input type="number" name="quantity" value="1" min="1" class="form-control" style="max-width: 80px;">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-cart-plus"></i> Add to Cart
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

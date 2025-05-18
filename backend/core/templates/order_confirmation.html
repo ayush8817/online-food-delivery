@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Confirmation - Food Delivery{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body text-center">
+                <h1 class="card-title mb-4">Order Confirmed!</h1>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle fa-3x mb-3"></i>
+                    <h4>Thank you for your order!</h4>
+                    <p>Your order has been successfully placed and is being processed.</p>
+                </div>
+                <p>We'll send you an email with the order details shortly.</p>
+                <a href="{% url 'home' %}" class="btn btn-primary">Return to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

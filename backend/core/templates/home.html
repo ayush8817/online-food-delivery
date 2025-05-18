@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+
+{% block title %}FOODIE - Order Delicious Food Online{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section text-white text-center py-5">
+    <div class="container">
+        <h1 class="display-4 mb-4">Order Delicious Food Online</h1>
+        <p class="lead mb-4">Discover the best restaurants and order your favorite food</p>
+        <form class="search-box mx-auto" action="{% url 'menu' %}" method="GET">
+            <div class="input-group">
+                <input type="text" class="form-control form-control-lg" 
+                       name="q" placeholder="Search for restaurants or dishes...">
+                <button class="btn btn-danger btn-lg" type="submit">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Restaurants Section -->
+<div class="container py-5">
+    <h2 class="text-center mb-4">Popular Restaurants</h2>
+    <div class="row">
+        {% for restaurant in restaurants %}
+        <div class="col-md-4 mb-4">
+            <div class="restaurant-card">
+                {% if restaurant.image %}
+                    <img src="{{ restaurant.image.url }}" alt="{{ restaurant.name }}" class="restaurant-image">
+                {% else %}
+                    <div class="restaurant-image-placeholder">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                {% endif %}
+                <div class="restaurant-info">
+                    <h3>{{ restaurant.name }}</h3>
+                    <p>{{ restaurant.description }}</p>
+                    <div class="restaurant-rating">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= restaurant.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <a href="{% url 'menu' %}?restaurant={{ restaurant.id }}" class="btn btn-primary">View Menu</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Featured Items Section -->
+<div class="container py-5">
+    <h2 class="text-center mb-4">Featured Items</h2>
+    <div class="row">
+        {% for item in featured_items %}
+        <div class="col-md-4 mb-4">
+            <div class="menu-item-card">
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.name }}" class="menu-item-image">
+                {% else %}
+                    <div class="menu-item-image-placeholder">
+                        <i class="fas fa-hamburger"></i>
+                    </div>
+                {% endif %}
+                <div class="menu-item-info">
+                    <h4>{{ item.name }}</h4>
+                    <p>{{ item.description }}</p>
+                    <div class="menu-item-price">
+                        <span>₹{{ item.price }}</span>
+                        <button class="btn btn-primary add-to-cart" data-item-id="{{ item.id }}">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="container py-5">
+    <h2 class="text-center mb-4">How It Works</h2>
+    <div class="row">
+        <div class="col-md-4 text-center mb-4">
+            <div class="p-4">
+                <i class="fas fa-search fa-3x text-danger mb-3"></i>
+                <h4>Search</h4>
+                <p class="text-muted">Find your favorite restaurant or dish</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-center mb-4">
+            <div class="p-4">
+                <i class="fas fa-utensils fa-3x text-danger mb-3"></i>
+                <h4>Order</h4>
+                <p class="text-muted">Add items to your cart and place your order</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-center mb-4">
+            <div class="p-4">
+                <i class="fas fa-motorcycle fa-3x text-danger mb-3"></i>
+                <h4>Delivery</h4>
+                <p class="text-muted">Get your food delivered to your doorstep</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.restaurant-image, .menu-item-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.restaurant-image-placeholder, .menu-item-image-placeholder {
+    width: 100%;
+    height: 200px;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.restaurant-image-placeholder i, .menu-item-image-placeholder i {
+    font-size: 3rem;
+    color: #6c757d;
+}
+
+.card {
+    transition: transform 0.3s;
+    border: none;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+.btn-outline-danger {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: white;
+}
+</style>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const itemId = this.dataset.itemId;
+            fetch('/update-cart/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    item_id: itemId,
+                    quantity: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    updateCartCount();
+                    // Show success message
+                    const toast = document.createElement('div');
+                    toast.className = 'position-fixed bottom-0 end-0 p-3';
+                    toast.style.zIndex = '5';
+                    toast.innerHTML = `
+                        <div class="toast show" role="alert">
+                            <div class="toast-header">
+                                <strong class="me-auto">FOODIE</strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                            </div>
+                            <div class="toast-body">
+                                Item added to cart!
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(toast);
+                    setTimeout(() => toast.remove(), 3000);
+                }
+            });
+        });
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+{% endblock %}
+{% endblock %} 
